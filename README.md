@@ -27,4 +27,26 @@ Our model's performance:
 
 Clearly, this is not an ideal model. Our training accuracy is perfect, essentially showing that our decision tree right now is simply memorizing the data, with not necessarily a terrible performance for testing accuracy with 84.9%. Howevever, our model will likely generalize better if we decrease the complexity of the tree and engineer more features to make the current numerical features we have less noisy. 
 
+---
+
+## Final Model ##
+Given that our nominal features were already encoded, we decided to see if we could transform any of our quantitative data into more meaningful features. Given our knowledge of League of Legends, we realized that our current features, **earned gpm**, **dpm**, and **damagetakenperminute**, would likely vary considerably on the way a certain player is playing the game. For example, a player playing with a specific champion would have less dpm taken if they are more on defense than another champion. A similar relationship exists for the position the player is playing at. Because of this, we decidided to standardize these columns by group, specifically standardizing **earned gpm** and **dpm** within each **position**, and **damagetakenperminute** within champion. These features are useful as they are essentially making the data more relative to the way the player is playing a game. For example, our baseline model would seek a lot of damage taken and possibly penalize that player regardless of the character they are playing as. Now, if a character/champion is more aggressive but in general leads to more wins, damage taken is now standardized relative to the champion, making our model far more consistent and balanced. 
+
+For the nominal features, we decided to keep the encoding the same. We also decided to stick with our decision tree model. 
+
+For our hyperparamters, we focused on **criterion**, **max_depth**, and **min_samples_split**, ensuring that our model wasn't overcomplicated and was using the right criteria to split its nodes. Since we were using a basic decision tree, in order to find our hyperparamters we used the in-built sklearn GridSearchCV class, with a k-value of 5 for our k-folds validation. These were the best paramaters we found: 
+- **criterion**: gini
+- **max_depth**: 13
+- **min_samples_split**: 50
+
+We incorporated these hyperparamters in our final decision tree model, and had these metrics as a result: 
+
+- **Training Accuracy**: 0.904
+- **Testing Accuracy**: 0.881
+
+Clearly, our final model is an improvement on our baseline model. It is no longer simply memorizing the training set, as we have added our hyperparamters into the model. Also, the testing accuracy has gone up, showing that our newly egineered features also aided alongside the hyperparameters. The model has improved from the baseline by being less complicated with the tree depth and also making the features as a whole more relevant and consistent with our standardization. The training accuracy is still slightly higher than our testing accuracy, so there is likely some additional engineering/tinkering we can do with our model. However, overall, the model seems consistent with good performance. 
+ 
+
+
+
 
