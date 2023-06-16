@@ -1,5 +1,5 @@
 ### League of Legends Win Prediction
-In this project, we used League of Legends data from 2022, titled the "League of Legends Competitive Matches", in order to predict whether or not an individual player won a game.
+In this project, we used League of Legends data from 2022, titled the "League of Legends Competitive Matches", in order to predict whether or not an individual player won a game. Our explatory analysis on this dataset can be found [here](https://ojas6987.github.io)
 
 ---
 
@@ -9,7 +9,7 @@ For our prediction problem, we wanted to specifically take individual player dat
 ---
 
 ## Baseline Model ##
-In order to make a model specifically, for player prediction, we first had to clean our dataset by taking away any overall team data. After using only player data, we narrowed down the features we were using to these: 
+In order to make a model specifically, for player prediction, we first had to clean our dataset by taking away any overall team data. We also focused only on the top leagues, taking away other leagues from the dataset. After using only player data, we narrowed down the features we were using to these: 
 - **league** (nominal): The specific league the player played in. Useful feature as being in a more competitive league could increase the possibility of a loss.
 - **position** (nominal): The position/role of the player in the game. Different positions each have their own unique skills. 
 - **champion** (nominal): The "character" in the game, each with their own skills/play type
