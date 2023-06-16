@@ -9,7 +9,7 @@ For our prediction problem, we wanted to specifically take individual player dat
 ---
 
 ## Baseline Model ##
-In order to make a model specifically, for player prediction, we first had to clean our dataset by taking away any overall team data (we decide to keep team_kills so that our decision tree could associate overall team kills with a player's kills, possibly using team contribution). After using only player data, we narrowed down the features we were using to these: 
+In order to make a model specifically, for player prediction, we first had to clean our dataset by taking away any overall team data. After using only player data, we narrowed down the features we were using to these: 
 - **league** (nominal): The specific league the player played in. Useful feature as being in a more competitive league could increase the possibility of a loss.
 - **position** (nominal): The position/role of the player in the game. Different positions each have their own unique skills. 
 - **champion** (nominal): The "character" in the game, each with their own skills/play type
@@ -17,32 +17,32 @@ In order to make a model specifically, for player prediction, we first had to cl
 - **damagetakeperminute** (quant): Damage the player received, also a good feature as more damage taken is usually bad for a player.
 - **kills** (quant): Number of kills in a game for a player. More kills, greater likelihood of winning.
 - **earnedgpm** (quant): Earned gold per minute, similar to kills and dpm, good for a player
-- **teamkills** (quant): overall kills from team, added to ????? tf we do with this
+
 
 For the nominal data, we used a OneHotEncoder in our pipeline to represent each unique league, position, and champion. 
 
 Our model's performance:
-- **Training Accuracy**: 1.0
-- **Testing Accuracy**: 0.849
+- **Training Accuracy**: 1
+- **Testing Accuracy**: 0.758
 
 Clearly, this is not an ideal model. Our training accuracy is perfect, essentially showing that our decision tree right now is simply memorizing the data, with not necessarily a terrible performance for testing accuracy with 84.9%. Howevever, our model will likely generalize better if we decrease the complexity of the tree and engineer more features to make the current numerical features we have less noisy. 
 
 ---
 
 ## Final Model ##
-Given that our nominal features were already encoded, we decided to see if we could transform any of our quantitative data into more meaningful features. Given our knowledge of League of Legends, we realized that our current features, **earned gpm**, **dpm**, and **damagetakenperminute**, would likely vary considerably on the way a certain player is playing the game. For example, a player playing with a specific champion would have less dpm taken if they are more on defense than another champion. A similar relationship exists for the position the player is playing at. Because of this, we decidided to standardize these columns by group, specifically standardizing **earned gpm** and **dpm** within each **position**, and **damagetakenperminute** within champion. These features are useful as they are essentially making the data more relative to the way the player is playing a game. For example, our baseline model would seek a lot of damage taken and possibly penalize that player regardless of the character they are playing as. Now, if a character/champion is more aggressive but in general leads to more wins, damage taken is now standardized relative to the champion, making our model far more consistent and balanced. 
+For our quantitative features, specifically **gpm**, **dpm**, and **kills**, we decided to create 3 new features by quantiling these data. Given that the 3 columns are a bit noisy in terms of data, we quantiled in order to give the model features with considerably less outliers and more organized data. Furthermore, since we are not certain about the normality of these features, quantiling cleans up that data. We also decidied to binarize **damagetakenperminute**, as after exploring the data, we learned that players with more damage won less games on average. Therefore, binarizing the data with a threshold of 500 in order to make the feature simpler for the model and to better stress the impact of **damagetakenperminute**. We realized that this could have the negative effect of possibly erasing numerical data from the feature. However, given that the difference in damage taken is likely only siginficant between thresholds (for example, damage taken of 50 and 100 should probably not be seen as a "significant feature"), we decided to continue with the binarization of the damage taken feature. 
 
 For the nominal features, we decided to keep the encoding the same. We also decided to stick with our decision tree model. 
 
 For our hyperparameters, we focused on **criterion**, **max_depth**, and **min_samples_split**, ensuring that our model wasn't overcomplicated and was using the right criteria to split its nodes. Since we were using a basic decision tree, in order to find our hyperparamters we used the in-built sklearn GridSearchCV class, with a k-value of 5 for our k-folds validation. These were the best paramaters we found: 
-- **criterion**: gini
+- **criterion**: entropy
 - **max_depth**: 13
 - **min_samples_split**: 50
 
 We incorporated these hyperparamters in our final decision tree model, and had these metrics as a result: 
 
-- **Training Accuracy**: 0.904
-- **Testing Accuracy**: 0.881
+- **Training Accuracy**: 0.842
+- **Testing Accuracy**: 0.805
 
 Clearly, our final model is an improvement on our baseline model. It is no longer simply memorizing the training set, as we have added our hyperparamters into the model. Also, the testing accuracy has gone up, showing that our newly egineered features also aided alongside the hyperparameters. The model has improved from the baseline by being less complicated with the tree depth and also making the features as a whole more relevant and consistent with our standardization. The training accuracy is still slightly higher than our testing accuracy, so there is likely some additional engineering/tinkering we can do with our model. However, overall, the model seems consistent with good performance. 
 
