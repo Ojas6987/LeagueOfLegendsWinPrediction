@@ -34,7 +34,7 @@ Given that our nominal features were already encoded, we decided to see if we co
 
 For the nominal features, we decided to keep the encoding the same. We also decided to stick with our decision tree model. 
 
-For our hyperparamters, we focused on **criterion**, **max_depth**, and **min_samples_split**, ensuring that our model wasn't overcomplicated and was using the right criteria to split its nodes. Since we were using a basic decision tree, in order to find our hyperparamters we used the in-built sklearn GridSearchCV class, with a k-value of 5 for our k-folds validation. These were the best paramaters we found: 
+For our hyperparameters, we focused on **criterion**, **max_depth**, and **min_samples_split**, ensuring that our model wasn't overcomplicated and was using the right criteria to split its nodes. Since we were using a basic decision tree, in order to find our hyperparamters we used the in-built sklearn GridSearchCV class, with a k-value of 5 for our k-folds validation. These were the best paramaters we found: 
 - **criterion**: gini
 - **max_depth**: 13
 - **min_samples_split**: 50
@@ -45,6 +45,19 @@ We incorporated these hyperparamters in our final decision tree model, and had t
 - **Testing Accuracy**: 0.881
 
 Clearly, our final model is an improvement on our baseline model. It is no longer simply memorizing the training set, as we have added our hyperparamters into the model. Also, the testing accuracy has gone up, showing that our newly egineered features also aided alongside the hyperparameters. The model has improved from the baseline by being less complicated with the tree depth and also making the features as a whole more relevant and consistent with our standardization. The training accuracy is still slightly higher than our testing accuracy, so there is likely some additional engineering/tinkering we can do with our model. However, overall, the model seems consistent with good performance. 
+
+## Fairness Analysis ##
+In order to ensure that our model was fair and not biased towards a specific group, we also conducted a fairness analysis on our model. Specifically, we were interested on whether or not the model was biased towards a specific league: LCK--the Korean League and one of the most competitive in the world. We wanted to treat this league as group X, and compare the model's performance on this league to all other leagues, our group Y.
+
+We decided to stick with accuracy and make our metric **accuracy parity**, as accuracy would not be hindered by class imbalance. We then conducted a permuation test to determine if there was any significant difference in the model's accuracy for these two groups. 
+
+**Ho**: There is **no** difference between the performance accuracy of the model on predicting the game's result for players in the LCK league and the performance accuracy for players not in that league.
+
+**Ha**: The model is **more** accurate predicting for players in the LCK league than for players not from the league. 
+
+The most useful test statistic for this test would therefore be the **signed** difference between model accuracy for the two groups. We chose a standard significance level of 0.05. 
+
+After running the test, we got a p-value  of 0.45, far greater than our significance level and illustrating that there is **no** evidence that our model is more accurate for LCK players. Essentially, our model is likely not biased towards LCK and likekly dependable for predictions for that league. 
  
 
 
