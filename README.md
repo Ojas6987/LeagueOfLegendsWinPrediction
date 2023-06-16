@@ -4,7 +4,7 @@ In this project, we used League of Legends data from 2022, titled the "League of
 ---
 
 ## Framing the Problem ##
-For our prediction problem, we wanted to specifically take individual player data from the dataset, assuming we had all data after a game except the actual result of the game, and use that data to predict whether a player was on a winning or losing team. Therefore, for this problem, we used a **decision tree classifier** and used **binary classification**, with a 1 representing a win and 0 representing a loss. Our response variable was **result**, or the result of the game (win or loss). This was clearly the variable we wanted to predict. For our metrics, we used **accuracy**, knowing that the dataset will likely not be skewed in classes as every player has to either win or lose, and for every winning player there will therefore be an equivalent losing player. Because of this reason, we felt comfortable using accuracy as our primary metric.
+For our prediction problem, we wanted to specifically take individual player data from the dataset, assuming we had all data after a game except the actual result of the game, and use that data to predict whether a player was on a winning or losing team. Therefore, for this problem, we used a **decision tree classifier**  first for our baseline and then changed to **logistic regression** for our final model, using **binary classification**, with a 1 representing a win and 0 representing a loss. Our response variable was **result**, or the result of the game (win or loss). This was clearly the variable we wanted to predict. For our metrics, we used **accuracy**, knowing that the dataset will likely not be skewed in classes as every player has to either win or lose, and for every winning player there will therefore be an equivalent losing player. Because of this reason, we felt comfortable using accuracy as our primary metric.
 
 ---
 
@@ -19,11 +19,11 @@ In order to make a model specifically, for player prediction, we first had to cl
 - **earnedgpm** (quant): Earned gold per minute, similar to kills and dpm, good for a player
 
 
-For the nominal data, we used a OneHotEncoder in our pipeline to represent each unique league, position, and champion. 
+For the nominal data, we used a OneHotEncoder in our pipeline to represent each unique league, position, and champion. We then fitted our decision tree classifier pipeline to the data.
 
 Our model's performance:
 - **Training Accuracy**: 1
-- **Testing Accuracy**: 0.758
+- **Testing Accuracy**: 0.766
 
 Clearly, this is not an ideal model. Our training accuracy is perfect, essentially showing that our decision tree right now is simply memorizing the data, with not necessarily a terrible performance for testing accuracy with 84.9%. Howevever, our model will likely generalize better if we decrease the complexity of the tree and engineer more features to make the current numerical features we have less noisy. 
 
@@ -34,17 +34,19 @@ For our quantitative features, specifically **gpm**, **dpm**, and **kills**, we 
 
 For the nominal features, we decided to keep the encoding the same. We also decided to stick with our decision tree model. 
 
-For our hyperparameters, we focused on **criterion**, **max_depth**, and **min_samples_split**, ensuring that our model wasn't overcomplicated and was using the right criteria to split its nodes. Since we were using a basic decision tree, in order to find our hyperparamters we used the in-built sklearn GridSearchCV class, with a k-value of 5 for our k-folds validation. These were the best paramaters we found: 
-- **criterion**: entropy
-- **max_depth**: 13
-- **min_samples_split**: 50
+We also made the decision to switch our our model to logistic regression as we realized that decision trees have a tendedency to overfit and that logistic regression was complex enough for binary classification.
 
-We incorporated these hyperparamters in our final decision tree model, and had these metrics as a result: 
+For our now logistic regression hyperparameters, we focused on the **penalty** implemented on the features for logistic regression, **C** for regularization, and **solver** to pick the algoritm for regression. We used a value of 5 for cv, create 5 folds for our validation. These are ideal parameters:
+- **C**: 10
+- **penalty**: 12
+- **solver**: liblinear
 
-- **Training Accuracy**: 0.842
-- **Testing Accuracy**: 0.805
+We incorporated these hyperparamters in our final model, and had these metrics as a result: 
 
-Clearly, our final model is an improvement on our baseline model. It is no longer simply memorizing the training set, as we have added our hyperparamters into the model. Also, the testing accuracy has gone up, showing that our newly egineered features also aided alongside the hyperparameters. The model has improved from the baseline by being less complicated with the tree depth and also making the features as a whole more relevant and consistent with our standardization. The training accuracy is still slightly higher than our testing accuracy, so there is likely some additional engineering/tinkering we can do with our model. However, overall, the model seems consistent with good performance. 
+- **Training Accuracy**: 0.824
+- **Testing Accuracy**: 0.826
+
+Clearly, our final model is an improvement on our baseline model. In contrast to our decision tree, logistic regression is not overfitting and has very good generalization, as the training accuracy and testing accuracy are similar. Furthermore, it looks like our parameters are helpful, making the data more consistent and less messy for our model to work with. Overall, our final model has improved on the the training model significantly, creating a model with both strong training and testing accuracy by being more refined. 
 
 ---
 
